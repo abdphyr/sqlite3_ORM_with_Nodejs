@@ -3,7 +3,12 @@ const { Comment } = require("./comments.model");
 class CommentController {
   async all(req, res) {
     try {
-      const comments = await Comment.all();
+      const { product_id } = req.query;
+      const comments = await Comment
+        .join("users", "id", "user_id")
+        .selectFromRight("username")
+        .where("product_id", "=", product_id)
+        .get();
       res.json(comments);
     } catch (error) {
       res.status(500).json({ message: error.message })

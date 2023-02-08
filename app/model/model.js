@@ -1,4 +1,6 @@
 const database = require('../database/db');
+const { All } = require('./all');
+const { Join } = require("./join");
 
 class Model {
   static db = database;
@@ -15,7 +17,7 @@ class Model {
     }
   }
 
-  static findBy(find) {
+  static async findBy(find) {
     return new Promise((resolve, reject) => {
       this.db.get(`SELECT * FROM ${this.table} WHERE ${Object
         .keys(find)
@@ -32,7 +34,7 @@ class Model {
     })
   }
 
-  static findByEmail(email) {
+  static async findByEmail(email) {
     return new Promise((resolve, reject) => {
       this.db.get(`SELECT * FROM ${this.table} WHERE email = ?`,
         email,
@@ -46,7 +48,7 @@ class Model {
     })
   }
 
-  static findById(id) {
+  static async findById(id) {
     return new Promise((resolve, reject) => {
       this.db.get(`SELECT * FROM ${this.table} WHERE id = ?`,
         id,
@@ -60,7 +62,7 @@ class Model {
     })
   }
 
-  static hasMany({ rel, column, id }) {
+  static async hasMany({ rel, column, id }) {
     return new Promise((resolve, reject) => {
       this.db.all(`SELECT * FROM ${rel} WHERE ${column} = ?`,
         id,
@@ -74,20 +76,15 @@ class Model {
     })
   }
 
-  static all() {
-    return new Promise((resolve, reject) => {
-      this.db.all(`SELECT * FROM ${this.table}`,
-        (error, rows) => {
-          if (error) {
-            reject(error)
-          } else {
-            resolve(rows);
-          }
-        })
-    })
+  static join(joinTable, joinCol, col) {
+    return new Join(this.table, this.fields, joinTable, joinCol, col);
   }
 
-  static save(data) {
+  static all() {
+    return new All(this.table);
+  }
+
+  static async save(data) {
     return new Promise((resolve, reject) => {
       Object.keys(data).forEach(val => {
         if (!this.fields.includes(val)) {
@@ -118,7 +115,7 @@ class Model {
     })
   }
 
-  static update(id, data) {
+  static async update(id, data) {
     return new Promise((resolve, reject) => {
       Object.keys(data).forEach(val => {
         if (!this.fields.includes(val)) {
@@ -141,7 +138,7 @@ class Model {
     })
   }
 
-  static delete(id) {
+  static async delete(id) {
     return new Promise((resolve, reject) => {
       this.db.run(`DELETE FROM ${this.table} WHERE id = ?`,
         id,

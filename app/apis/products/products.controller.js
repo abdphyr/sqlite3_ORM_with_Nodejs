@@ -5,7 +5,7 @@ class ProductController {
 
   async all(req, res) {
     try {
-      const products = await Product.all();
+      const products = await Product.all().get();
       res.json(products);
     } catch (error) {
       res.status(500).json({ message: error.message })
@@ -19,8 +19,7 @@ class ProductController {
       if (!product) {
         return res.status(404).json({ message: "Product not found" })
       }
-      const comments = await Product.comments(id);
-      res.json({ product, comments });
+      res.json(product);
     } catch (error) {
       res.status(500).json({ message: error.message })
     }

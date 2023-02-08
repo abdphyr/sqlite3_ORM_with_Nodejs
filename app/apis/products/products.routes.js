@@ -7,9 +7,9 @@ const prs = new ProductController();
 
 const publicProducts = Router()
   .get("/products", prs.all)
+  .get("/products/:id", prs.one)
   
   const protectedProducts = Router()
-  .get("/products/:id", prs.one)
   .post("/products", upload.single('image'), prs.create)
   .put("/products/:id", prs.update)
   .delete("/products/:id", prs.delete)
