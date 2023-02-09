@@ -4,12 +4,15 @@ class CommentController {
   async all(req, res) {
     try {
       const { product_id } = req.query;
-      const comments = await Comment
-        .join("users", "id", "user_id")
+      const commentsQuery = Comment
+        .leftJoin("users", "id", "user_id")
         .selectFromRight("username")
-        .where("product_id", "=", product_id)
-        .get();
-      res.json(comments);
+        .where("product_id", "=", product_id);
+
+      const comments = await commentsQuery.get();
+      const rate = await commentsQuery.avg("rate");
+      const count = await commentsQuery.count();
+      res.json({ count, rate, comments });
     } catch (error) {
       res.status(500).json({ message: error.message })
     }
