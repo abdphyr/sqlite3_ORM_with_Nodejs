@@ -1,6 +1,6 @@
 const database = require('../database/db');
 const { All } = require('./all');
-const { Join } = require("./join");
+const { LeftJoin } = require("./join");
 
 class Model {
   static db = database;
@@ -76,8 +76,8 @@ class Model {
     })
   }
 
-  static join(joinTable, joinCol, col) {
-    return new Join(this.table, this.fields, joinTable, joinCol, col);
+  static leftJoin(joinTable, joinCol, col) {
+    return new LeftJoin(this.table, this.fields, joinTable, joinCol, col);
   }
 
   static all() {
