@@ -4,14 +4,15 @@ class Query {
   db;
   table;
   sql;
+  slct;
   params;
   constructor(table) {
     this.db = database;
     this.table = table;
   }
 
-  changeSelect(select) {
-    this.sql = this.sql.replace('*', select);
+  changeSelect() {
+    this.sql = this.sql.replace('*', this.slct);
   }
 
   orderBy(col, down) {
@@ -27,6 +28,20 @@ class Query {
   select(columns) {
     this.changeSelect(columns);
     return this;
+  }
+
+  async avg(column, round) {
+    const selectEnd = this.sql.indexOf("FROM");
+    this.sql = `SELECT ROUND(AVG(${column}), ${round ? round : 0}) AS avg ` + this.sql.slice(selectEnd);
+    const avg = await this.get();
+    return avg[0]['avg'];
+  }
+
+  async count() {
+    const selectEnd = this.sql.indexOf("FROM");
+    this.sql = `SELECT COUNT(*) AS count ` + this.sql.slice(selectEnd);
+    const count = await this.get();
+    return count[0]['count'];
   }
 
   async get() {
