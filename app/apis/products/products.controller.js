@@ -5,10 +5,14 @@ class ProductController {
 
   async all(req, res) {
     try {
-      const products = await Product.all().get();
+      const products = await Product
+        .leftJoin("comments", "product_id", "id")
+        .selectFromRight("")
+        .groupBy("products.id", { count: "comments.id", avg: "comments.rate" })
+        .get();
       res.json(products);
     } catch (error) {
-      res.status(500).json({ message: error.message })
+      res.status(500).json({ message: error.message });
     }
   }
 
